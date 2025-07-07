@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Darth Vikings Star Wars Holocron Database</title>
+    <!-- Google Fonts for Star Wars-like typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Embedded CSS Styles -->
+    <style>
+        /* Root variables for consistent theming */
+        :root {
+            --star-wars-yellow: #ffe81f;
+            --dark-space: #000000;
+            --light-grey: #cccccc;
+            --blue-accent: #008cff;
+            --red-sith: #d32f2f;
+            --green-jedi: #4CAF50;
+            --card-bg: rgba(0, 0, 0, 0.8);
+            --border-color: rgba(255, 232, 31, 0.5);
+            --modal-bg: rgba(0, 0, 0, 0.95);
+            --saber-blue: #00f0ff; /* Brighter blue for saber effect */
+            --saber-red: #ff0000; /* Brighter red for saber effect */
+        }
+
+        /* Basic body styling */
+        body {
+            margin: 0;
+            font-family: 'Pathway Gothic One', sans-serif; /* Primary font */
+            background-color: var(--dark-space);
+            color: var(--star-wars-yellow);
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+            min-height: 100vh; /* Full viewport height */
+            display: flex;
+            flex-direction: column; /* For footer to stick to bottom */
+        }
+
+        /* Container for the animated stars background */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Send to background */
+            background-color: black; /* Ensure black background for stars */
+            /* New: Parallax effect base */
+            transform: translateZ(0); /* Force hardware acceleration */
+        }
+
+        /* Styling for individual star elements */
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%; /* Make them round */
+            opacity: 0; /* Start invisible for twinkle animation */
+            animation: twinkle 5s infinite ease-in-out; /* Twinkle animation */
+        }
+
+        /* Keyframes for the star twinkling effect */
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Navigation Bar Styling */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--star-wars-yellow);
+            box-shadow: 0 0 15px rgba(255, 232, 31, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000; /* Ensure it's on top */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            animation: fadeInDown 0.8s ease-out; /* New: Nav bar entry animation */
+        }
+
+        /* Keyframes for fade in from top */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-brand {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 1.8em;
+            color: var(--star-wars-yellow);
+            text-shadow: 0 0 8px var(--star-wars-yellow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 20px;
+        }
+
+        .nav-brand .fas {
+            font-size: 1.2em;
+            animation: iconPulse 2s infinite alternate; /* New: Icon pulse */
+        }
+
+        /* Keyframes for icon pulse */
+        @keyframes iconPulse {
+            from { transform: scale(1); text-shadow: 0 0 5px var(--star-wars-yellow); }
+            to { transform: scale(1.1); text-shadow: 0 0 15px var(--star-wars-yellow); }
+        }
+
+        .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 25px;
+            flex-grow: 1; /* Allow links to take space */
+            justify-content: center; /* Center links */
+        }
+
+        .nav-links a {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 1.2em;
+            padding: 5px 10px;
+            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease; /* New: transform transition */
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--star-wars-yellow);
+            text-shadow: 0 0 8px var(--star-wars-yellow);
+            transform: translateY(-3px); /* New: subtle lift on hover */
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #searchInput {
+            padding: 8px 15px;
+            border: 1px solid var(--star-wars-yellow);
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: 'Pathway Gothic One', sans-serif;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #searchInput::placeholder {
+            color: var(--light-grey);
+            opacity: 0.7;
+        }
+
+        #searchInput:focus {
+            border-color: var(--blue-accent);
+            box-shadow: 0 0 10px rgba(0, 140, 255, 0.5);
+        }
+
+        #searchButton {
+            background-color: var(--star-wars-yellow);
+            color: var(--dark-space);
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* New: box-shadow transition */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #searchButton:hover {
+            background-color: var(--blue-accent);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--blue-accent); /* New: Glow on hover */
+        }
+
+
+        /* Main header styling */
+        .main-header {
+            text-align: center;
+            padding: 80px 20px 50px; /* More padding at top */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0)); /* Gradient fade */
+            position: relative;
+            z-index: 1; /* Ensure header is above stars */
+        }
+
+        .main-header h1 {
+            font-family: 'Roboto Condensed', sans-serif; /* Title font */
+            font-size: 4.5em; /* Larger title */
+            color: var(--star-wars-yellow);
+            text-shadow: 0 0 15px var(--star-wars-yellow), 0 0 30px var(--star-wars-yellow), 0 0 45px var(--star-wars-yellow); /* Stronger glow effect */
+            margin-bottom: 15px;
+            animation: textGlow 2s infinite alternate; /* Text glow animation */
+        }
+
+        /* Keyframes for text glow */
+        @keyframes textGlow {
+            from { text-shadow: 0 0 15px var(--star-wars-yellow), 0 0 30px var(--star-wars-yellow); }
+            to { text-shadow: 0 0 25px var(--star-wars-yellow), 0 0 50px var(--star-wars-yellow), 0 0 75px var(--star-wars-yellow); }
+        }
+
+        .main-header .subtitle {
+            font-size: 1.8em;
+            color: var(--light-grey);
+            text-shadow: 0 0 8px var(--light-grey);
+        }
+
+        /* Content section layout */
+        .content-section {
+            flex-grow: 1; /* Allows content to take available space */
+            padding: 20px;
+            max-width: 1200px; /* Wider content area */
+            margin: 0 auto; /* Center content */
+            position: relative;
+            z-index: 1;
+            perspective: 800px; /* For the 3D perspective of the crawl */
+        }
+
+        /* Star Wars opening crawl styling (REMOVED) */
+        /*
+        .intro-crawl {
+            height: 500px;
+            overflow: hidden;
+            position: relative;
+            font-size: 1.8em;
+            text-align: justify;
+            line-height: 1.5;
+            transform-origin: 50% 100%;
+            transform: rotateX(20deg) translateY(100%);
+            animation: crawl 60s linear infinite;
+            color: var(--star-wars-yellow);
+            margin-bottom: 80px;
+            text-shadow: 0 0 8px var(--star-wars-yellow);
+        }
+
+        .crawl-text {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            animation: crawlBlur 60s linear infinite;
+        }
+
+        .crawl-text p {
+            margin-bottom: 1em;
+        }
+
+        @keyframes crawl {
+            0% {
+                transform: rotateX(20deg) translateY(100%);
+                opacity: 1;
+            }
+            100% {
+                transform: rotateX(20deg) translateY(-200%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes crawlBlur {
+            0% { filter: blur(0px); }
+            5% { filter: blur(0.5px); }
+            95% { filter: blur(0.5px); }
+            100% { filter: blur(0px); }
+        }
+        */
+
+
+        /* Styling for the info card section (existing content) */
+        .info-card {
+            background-color: var(--card-bg); /* Semi-transparent background */
+            border: 2px solid var(--border-color);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 232, 31, 0.5); /* Glow effect */
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .info-card h2 {
+            font-size: 2.5em;
+            color: var(--star-wars-yellow);
+            margin-bottom: 30px;
+            text-shadow: 0 0 5px var(--star-wars-yellow);
+        }
+
+        /* Grid layout for the individual cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+            gap: 20px;
+        }
+
+        /* Styling for individual cards */
+        .card {
+            background-color: rgba(255, 255, 255, 0.05); /* Very subtle transparent background */
+            border: 1px solid rgba(255, 232, 31, 0.3); /* Subtle border */
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02); /* Lift and slightly enlarge on hover */
+            box-shadow: 0 0 15px rgba(255, 232, 31, 0.7); /* More prominent glow on hover */
+        }
+
+        .card h3 {
+            color: var(--blue-accent);
+            font-size: 1.8em;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: var(--light-grey);
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        /* New Data Sections (Characters, Planets, Vehicles, Species, Starships) */
+        .data-section {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 232, 31, 0.5);
+            margin-top: 80px; /* More space between sections */
+            text-align: center;
+            opacity: 0; /* Hidden by default for reveal-on-scroll */
+            transform: translateY(50px); /* Start slightly below for reveal-on-scroll */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Smooth reveal */
+        }
+
+        .data-section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .data-section h2 {
+            font-size: 3em;
+            color: var(--star-wars-yellow);
+            margin-bottom: 40px;
+            text-shadow: 0 0 8px var(--star-wars-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            animation: textGlow 2s infinite alternate; /* Text glow animation */
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Smaller cards, more fit */
+            gap: 25px;
+        }
+
+        /* Styling for dynamically generated data cards */
+        .data-card {
+            background-color: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 232, 31, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Existing hover transition */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-bottom: 15px;
+            opacity: 0; /* Start invisible for entry animation */
+            transform: translateY(20px); /* Start slightly below for entry animation */
+            animation: fadeInUp 0.6s ease-out forwards; /* Entry animation */
+        }
+
+        /* Keyframes for fade in and up animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Apply staggered animation delay to data cards - up to 20 for more content */
+        .data-grid .data-card:nth-child(1) { animation-delay: 0.1s; }
+        .data-grid .data-card:nth-child(2) { animation-delay: 0.15s; }
+        .data-grid .data-card:nth-child(3) { animation-delay: 0.2s; }
+        .data-grid .data-card:nth-child(4) { animation-delay: 0.25s; }
+        .data-grid .data-card:nth-child(5) { animation-delay: 0.3s; }
+        .data-grid .data-card:nth-child(6) { animation-delay: 0.35s; }
+        .data-grid .data-card:nth-child(7) { animation-delay: 0.4s; }
+        .data-grid .data-card:nth-child(8) { animation-delay: 0.45s; }
+        .data-grid .data-card:nth-child(9) { animation-delay: 0.5s; }
+        .data-grid .data-card:nth-child(10) { animation-delay: 0.55s; }
+        .data-grid .data-card:nth-child(11) { animation-delay: 0.6s; }
+        .data-grid .data-card:nth-child(12) { animation-delay: 0.65s; }
+        .data-grid .data-card:nth-child(13) { animation-delay: 0.7s; }
+        .data-grid .data-card:nth-child(14) { animation-delay: 0.75s; }
+        .data-grid .data-card:nth-child(15) { animation-delay: 0.8s; }
+        .data-grid .data-card:nth-child(16) { animation-delay: 0.85s; }
+        .data-grid .data-card:nth-child(17) { animation-delay: 0.9s; }
+        .data-grid .data-card:nth-child(18) { animation-delay: 0.95s; }
+        .data-grid .data-card:nth-child(19) { animation-delay: 1.0s; }
+        .data-grid .data-card:nth-child(20) { animation-delay: 1.05s; }
+
+
+        .data-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 0 25px rgba(255, 232, 31, 0.8);
+        }
+
+        .data-card img {
+            width: 100%;
+            height: 180px; /* Fixed height for images */
+            object-fit: cover; /* Cover the area, crop if necessary */
+            border-bottom: 1px solid rgba(255, 232, 31, 0.2);
+        }
+
+        .data-card h3 {
+            color: var(--blue-accent);
+            font-size: 1.6em;
+            margin: 15px 10px 5px;
+            text-shadow: 0 0 3px var(--blue-accent);
+        }
+
+        .data-card p {
+            color: var(--light-grey);
+            font-size: 0.95em;
+            margin: 0 10px 10px;
+            line-height: 1.4;
+            flex-grow: 1; /* Allow description to take space */
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 2000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%;
+            overflow: auto;
+            background-color: var(--modal-bg);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+
+        /* Keyframes for modal fade in */
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: auto;
+            padding: 30px;
+            border: 3px solid var(--star-wars-yellow);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 232, 31, 0.7);
+            animation: fadeInScale 0.3s ease-out forwards;
+            max-height: 90vh; /* Limit height to allow scrolling */
+            overflow-y: auto; /* Enable scrolling within modal content */
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .close-button {
+            color: var(--star-wars-yellow);
+            font-size: 3em;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--red-sith);
+            text-decoration: none;
+            cursor: pointer;
+            transform: rotate(90deg);
+        }
+
+        #modalTitle {
+            font-family: 'Roboto Condensed', sans-serif;
+            color: var(--star-wars-yellow);
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--star-wars-yellow);
+        }
+
+        .modal-image {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 0 auto 25px;
+            border: 2px solid var(--blue-accent);
+            box-shadow: 0 0 15px rgba(0, 140, 255, 0.5);
+        }
+
+        #modalDescription {
+            color: var(--light-grey);
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .modal-lore-section h3 {
+            color: var(--green-jedi);
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px var(--green-jedi);
+        }
+
+        #modalLore {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--light-grey);
+            padding: 20px;
+            border-radius: 8px;
+            color: var(--light-grey);
+            font-size: 1.1em;
+            line-height: 1.7;
+            text-align: justify;
+            min-height: 100px; /* Placeholder height for loading */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-text {
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Back to Top Button */
+        #backToTopBtn {
+            display: none; /* Hidden by default */
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            background-color: var(--star-wars-yellow);
+            color: var(--dark-space);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.8em;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--star-wars-yellow);
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden; /* Hide saber effect overflow */
+        }
+
+        #backToTopBtn:hover {
+            background-color: var(--blue-accent);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 25px var(--blue-accent);
+        }
+
+        #backToTopBtn .saber-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--saber-blue) 0%, rgba(0, 240, 255, 0.5) 50%, transparent 70%);
+            transition: transform 0.3s ease-out;
+            opacity: 0.7;
+            pointer-events: none; /* Allow clicks to pass through */
+        }
+
+        #backToTopBtn:hover .saber-effect {
+            transform: translate(-50%, -50%) scale(1.2); /* Expand on hover */
+        }
+
+        /* Footer styling */
+        .main-footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 80px; /* More space above footer */
+            background-color: rgba(0, 0, 0, 0.7);
+            border-top: 1px solid var(--star-wars-yellow);
+            font-size: 0.9em;
+            color: var(--light-grey);
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 1024px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 15px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            .search-container {
+                width: 100%;
+                justify-content: center;
+            }
+            #searchInput {
+                width: calc(100% - 60px); /* Adjust for button width */
+            }
+            .main-header h1 {
+                font-size: 3.5em;
+            }
+            .main-header .subtitle {
+                font-size: 1.5em;
+            }
+            /* .intro-crawl { height: 450px; } */ /* Removed for crawl text removal */
+            .data-section h2 {
+                font-size: 2.5em;
+            }
+            .data-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-header h1 {
+                font-size: 2.8em;
+            }
+            .main-header .subtitle {
+                font-size: 1.2em;
+            }
+            /* .intro-crawl { height: 400px; } */ /* Removed for crawl text removal */
+            .info-card h2, .data-section h2 {
+                font-size: 2em;
+            }
+            .card h3, .data-card h3 {
+                font-size: 1.5em;
+            }
+            .card p, .data-card p {
+                font-size: 1em;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            #modalTitle {
+                font-size: 2.5em;
+            }
+            #modalDescription, #modalLore {
+                font-size: 1em;
+            }
+            .close-button {
+                font-size: 2.5em;
+                top: 5px;
+                right: 15px;
+            }
+            #backToTopBtn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-header h1 {
+                font-size: 2.2em;
+            }
+            .main-header .subtitle {
+                font-size: 1em;
+            }
+            /* .intro-crawl { height: 350px; } */ /* Removed for crawl text removal */
+            .navbar .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .navbar .nav-brand {
+                font-size: 1.5em;
+            }
+            .data-grid {
+                grid-template-columns: 1fr; /* Single column on very small screens */
+            }
+            .data-card img {
+                height: 150px;
+            }
+            .info-card h2, .data-section h2 {
+                font-size: 1.8em;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Container for the dynamic star background -->
+    <div class="stars-container"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-jedi"></i> Star Wars Holocron <i class="fas fa-sith"></i>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#characters">Characters</a></li>
+            <li><a href="#planets">Planets</a></li>
+            <li><a href="#vehicles">Vehicles</a></li>
+            <li><a href="#species">Species</a></li>
+            <li><a href="#starships">Starships</a></li>
+        </ul>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search the Holocron..." aria-label="Search">
+            <button id="searchButton"><i class="fas fa-search"></i></button>
+        </div>
+    </nav>
+
+    <!-- Main header section -->
+    <header class="main-header" id="home">
+        <h1>A Long Time Ago in a Galaxy Far, Far Away...</h1>
+        <p class="subtitle">Welcome to the Ultimate Star Wars Holocron Database</p>
+    </header>
+
+    <!-- Main content area -->
+    <main class="content-section">
+        <!-- Star Wars opening crawl section (REMOVED) -->
+        <!--
+        <section class="intro-crawl">
+            <div class="crawl-text">
+                <p>It is a period of civil war. Rebel spaceships, striking from a hidden base, have won their first victory against the evil Galactic Empire.</p>
+                <p>During the battle, Rebel spies managed to steal secret plans to the Empire’s ultimate weapon, the DEATH STAR, an armored space station with enough power to destroy an entire planet.</p>
+                <p>Pursued by the Empire’s sinister agents, Princess Leia races home aboard her starship, custodian of the stolen plans that can save her people and restore freedom to the galaxy....</p>
+            </div>
+        </section>
+        -->
+
+        <!-- Information cards section (existing content) -->
+        <section class="info-card reveal-on-scroll">
+            <h2>Explore the Galaxy</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>The Force</h3>
+                    <p>An energy field created by all living things. It surrounds us and penetrates us; it binds the galaxy together.</p>
+                </div>
+                <div class="card">
+                    <h3>Lightsabers</h3>
+                    <p>The weapon of a Jedi Knight. An elegant weapon for a more civilized age.</p>
+                </div>
+                <div class="card">
+                    <h3>Iconic Ships</h3>
+                    <p>From the Millennium Falcon to X-Wings, explore the legendary starships of the Star Wars universe.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New section for Characters -->
+        <section class="data-section reveal-on-scroll" id="characters">
+            <h2><i class="fas fa-users"></i> Characters</h2>
+            <div class="data-grid" id="charactersGrid">
+                <!-- Character cards will be dynamically loaded here by script.js -->
+            </div>
+        </section>
+
+        <!-- New section for Planets -->
+        <section class="data-section reveal-on-scroll" id="planets">
+            <h2><i class="fas fa-globe"></i> Planets</h2>
+            <div class="data-grid" id="planetsGrid">
+                <!-- Planet cards will be dynamically loaded here by script.js -->
+            </div>
+        </section>
+
+        <!-- New section for Vehicles -->
+        <section class="data-section reveal-on-scroll" id="vehicles">
+            <h2><i class="fas fa-space-shuttle"></i> Vehicles</h2>
+            <div class="data-grid" id="vehiclesGrid">
+                <!-- Vehicle cards will be dynamically loaded here by script.js -->
+            </div>
+        </section>
+
+        <!-- New section for Species -->
+        <section class="data-section reveal-on-scroll" id="species">
+            <h2><i class="fas fa-paw"></i> Species</h2>
+            <div class="data-grid" id="speciesGrid">
+                <!-- Species cards will be dynamically loaded here by script.js -->
+            </div>
+        </section>
+
+        <!-- New section for Starships -->
+        <section class="data-section reveal-on-scroll" id="starships">
+            <h2><i class="fas fa-rocket"></i> Starships</h2>
+            <div class="data-grid" id="starshipsGrid">
+                <!-- Starship cards will be dynamically loaded here by script.js -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Detail Modal Structure (hidden by default) -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <img id="modalImage" src="" alt="Item Image" class="modal-image">
+            <p id="modalDescription"></p>
+            <div class="modal-lore-section">
+                <h3>Lore Details:</h3>
+                <p id="modalLore" class="loading-text">Generating lore...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="backToTopBtn" title="Go to top">
+        <i class="fas fa-arrow-up"></i>
+        <span class="saber-effect"></span>
+    </button>
+
+    <!-- Footer section -->
+    <footer class="main-footer">
+        <p>&copy; 2025 The Ultimate Star Wars Holocron Database (Fan-made project, not affiliated with Disney/Lucasfilm)</p>
+    </footer>
+
+    <!-- Embedded JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const starsContainer = document.querySelector('.stars-container');
+            const numStars = 500; // Increased number of stars for a richer background
+
+            // Function to create and append stars
+            function createStars() {
+                for (let i = 0; i < numStars; i++) {
+                    let star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    const size = Math.random() * 2 + 1; // 1 to 3px
+                    star.style.width = `${size}px`;
+                    star.style.height = star.style.width;
+                    star.style.animationDelay = `${Math.random() * 5}s`;
+                    star.style.animationDuration = `${Math.random() * 5 + 3}s`;
+                    starsContainer.appendChild(star);
+                }
+            }
+            createStars();
+
+            // --- Data for dynamic content (simulated database with more entries) ---
+            // Using placeholder images for variety.
+            const starWarsData = {
+                characters: [
+                    { id: 'vader', name: 'Darth Vader', type: 'Sith Lord', description: 'Once Anakin Skywalker, a powerful Sith Lord and enforcer of the Empire.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Vader' },
+                    { id: 'yoda', name: 'Yoda', type: 'Jedi Grand Master', description: 'A wise and powerful Jedi Master, known for his unique speech patterns.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Yoda' },
+                    { id: 'palpatine', name: 'Emperor Palpatine', type: 'Sith Lord/Emperor', description: 'The insidious mastermind behind the Galactic Empire and Darth Sidious.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Palpatine' },
+                    { id: 'mace', name: 'Mace Windu', type: 'Jedi Master', description: 'A powerful and wise Jedi Master known for his unique fighting style.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Mace' },
+                    { id: 'darth_young', name: 'Darth Young', type: 'Sith Apprentice', description: 'Darth Young is the grandson of the sinister Darth Vitiate. He becomes Jayden Windu\'s mentor in the dark arts, leading him further down the path of corruption. Together, they seek out other Sith Lords to bolster their ranks. Darth Young is a formidable figure, deeply entrenched in the dark side of the Force, and plays a crucial role in Jayden\'s descent into darkness.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Darth+Young' },
+                    { id: 'death_of_rome', name: 'Death Of Rome', type: 'Elite Stormtrooper Unit', description: 'Death Of Rome is an elite stormtrooper unit renowned for their exceptional combat skills, strategic nous, and bravery in the fiercest battles. They are known for their signature red and gold armor, which stands in striking contrast to the drab uniforms of standard stormtrooper units. This armor symbolizes their relentless dedication to their missions and unwavering loyalty to their command. The Death Of Rome stormtrooper group is unlike any other elite squadron, and their formidable force serves the dark side with unparalleled bravery.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Death+Of+Rome' },
+                    { id: 'big_knight', name: 'Big Knight', type: 'Heavy Trooper', description: 'Big Knight is an imposing figure, standing at an impressive 8 feet tall. He is known for his formidable presence and unwavering loyalty. Big Knight\'s armor is a blend of strength and elegance, designed to withstand the harshest of battles while symbolizing his dedication to his mission. His skills in combat are unmatched, and his strategic mind makes him a valuable ally in any conflict. Despite his intimidating appearance, Big Knight possesses a deep sense of honor and compassion, always striving to protect those in need and uphold justice in the galaxy.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Big+Knight' },
+                    { id: 'bommer', name: 'Bommer', type: 'Demolitions Expert', description: 'Bommer is a character reminiscent of Han Solo. He possesses a similar charm and roguish demeanor, often finding himself in situations that require quick thinking and resourcefulness. Bommer\'s skills in piloting and combat make him a valuable ally, and his loyalty to his friends is unwavering. Despite his rough exterior, Boomer has a heart of gold and a deep sense of justice, always ready to stand up for what is right.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Bommer' },
+                    { id: 'darth_vitiate', name: 'Darth Vitiate', type: 'Ancient Sith Lord', description: 'Darth Vitiate is a sinister figure whose legacy casts a long shadow over the galaxy. As the grandfather of Darth Young, Vitiate\'s influence is deeply entrenched in the dark side of the Force. His mastery of the dark arts and his ruthless pursuit of power have left an indelible mark on the Sith Order. Vitiate\'s teachings and philosophies continue to shape the actions of those who follow in his footsteps, including his grandson, Darth Young, who becomes Jayden Windu\'s mentor in the dark arts.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Darth+Vitiate' },
+                    { id: 'darth_wolf', name: 'Darth Wolf', type: 'Sith Warrior', description: 'Darth Wolf is a formidable Sith Lord, known for his cunning and ruthlessness. He stands alongside Darth Nightmare as one of the most feared figures in the galaxy. Darth Wolf\'s presence is weighty and filled with an aura of ferocity. His reputation for being a skilled and relentless warrior precedes him, making him a formidable opponent to anyone who dares to challenge him. Darth Wolf\'s character is defined by his strategic mind and his ability to manipulate the dark side of the Force to his advantage. He is a master of deception and combat, often using his skills to outmaneuver his enemies and achieve his goals. Despite his formidable prowess, Darth Wolf understands that power alone cannot shield him from danger, and he seeks protection from the elite stormtrooper unit known as Death of Rome. Together with Darth Nightmare, Darth Wolf forms a duo that is both feared and respected across countless worlds.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Darth+Wolf' },
+                    { id: 'darth_ren', name: 'Darth Ren', type: 'Leader of Knights of Ren', description: 'Darth Ren is the feared leader of the Knights of Ren, standing at the forefront of a new era of terror. His power and skill in the ways of the Force are unmatched, making him a formidable opponent to anyone who dares to challenge him. The galaxy trembles at the mere mention of his name. In a fierce battle, Darth Ren began to gain the upper hand against Jedi Solis and Jedi Azarik. His mastery of the Force allowed him to expertly maneuver around his opponents, striking with precision and intent. Despite the odds, Jedi Solis and Jedi Azarik fought valiantly, but Darth Ren\'s power proved overwhelming. With a swift stroke of his lightsaber, he severed Jedi Solis\'s leg and cut off Jedi Azarik\'s arm, leaving them injured and vulnerable. Darth Ren\'s sinister smile spread across his face as he collected strands of their hair, intending to clone them and create an army of powerful warriors under his control.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Darth+Ren' },
+                    { id: 'jayden_windu', name: 'Jayden Windu', type: 'Dark Side User', description: 'Jayden Windu is a complex character who experiences a significant transformation throughout the narrative. Initially, Jayden is captivated by the allure of the dark side, which leads him to betray his brothers, Finn and Brandon. This betrayal results in a tragic confrontation, leaving Finn and Brandon injured and scarred, forcing them to hide their wounds behind masks. Jayden, clouded by darkness, flees into the shadows, leaving sorrow in his wake. In his descent into darkness, Jayden encounters Darth Young, the grandson of the sinister Darth Vitiate. Darth Young becomes Jayden\'s mentor in the dark arts, leading him further down the path of corruption. Together, they seek out other Sith Lords to bolster their ranks. Jayden\'s journey is marked by his struggle with the dark side and his eventual realization of the consequences of his actions. Jayden\'s character is defined by his internal conflict and the impact of his choices on those around him. His story is a poignant reminder of the importance of remaining steadfast to the light side of the Force and the potential for redemption, even for those who have strayed far from the path of righteousness.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Jayden+Windu' },
+                    { id: 'brandon_windu', name: 'Brandon Windu', type: 'Jedi Azarik', description: 'Brandon Windu also known as Jedi Azarik, is a resilient and determined character who has faced numerous challenges throughout his journey. After being injured and scarred in a tragic confrontation with his brother Jayden, Brandon is forced to hide his wounds behind a mask. Despite the physical and emotional scars, Brandon\'s resolve remains unshaken, and he continues to fight for justice and the values of the Jedi Order. Brandon\'s character is defined by his unwavering courage and his deep sense of duty. He is driven by a desire for vengeance against those who have wronged his family, particularly Palpatine, who was responsible for the tragic loss of their fathers. This quest for justice leads Brandon and his brother Finn, also known as Jedi Solis, on a journey to uncover haunting truths and confront the darkness that threatens the galaxy. Throughout his journey, Brandon\'s strength and determination are tested, but he remains steadfast in his commitment to uphold the values of the Jedi Order. His character embodies the resilience and bravery needed to face the challenges ahead and protect the legacy of the Jedi.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Brandon+Windu' },
+                    { id: 'finn_windu', name: 'Finn Windu', type: 'Jedi Solis', description: 'Finn Windu also known as Jedi Solis, is a character marked by resilience and determination. After being injured and scarred in a tragic confrontation with his brother Jayden, Finn is forced to hide his wounds behind a mask. Despite the physical and emotional scars, Finn\'s resolve remains unshaken, and he continues to fight for justice and the values of the Jedi Order. Finn\'s character is defined by his unwavering courage and his deep sense of duty. He is driven by a desire for vengeance against those who have wronged his family, particularly Palpatine, who was responsible for the tragic loss of their fathers. This quest for justice leads Finn and his brother Brandon, also known as Jedi Azarik, on a journey to uncover haunting truths and confront the darkness that threatens the galaxy. Throughout his journey, Finn\'s strength and determination are tested, but he remains steadfast in his commitment to uphold the values of the Jedi Order. His character embodies the resilience and bravery needed to face the challenges ahead and protect the legacy of the Jedi.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Finn+Windu' },
+                    { id: 'darth_paul', name: 'Darth Paul', type: 'Sith Lord', description: 'Darth Paul is a formidable Sith Lord, the grandson of Ajunta Pall, the founder of the first Sith Empire. He resides on the ancient ruins of Malachor V, where he encounters Jayden Fines. Darth Paul possesses a commanding presence and a deep understanding of the dark side of the Force. His teachings and philosophies are deeply rooted in the ancient Sith traditions, and he becomes a mentor to Jayden, guiding him on his path to becoming a powerful Sith Lord.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Darth+Paul' },
+                    { id: 'darth_nightmare', name: 'Darth Nightmare', type: 'Shadowy Enigma', description: 'Darth Nightmare is a shadowy enigma—a name that strikes terror into the hearts of many. Known for his cunning and ruthlessness, he stands alongside Darth Wolf as one of the most feared figures in the galaxy. Despite his formidable prowess, Darth Nightmare understands that power alone cannot shield him from danger. He seeks protection from the elite stormtrooper unit known as Death of Rome. These stormtroopers, renowned for their exceptional combat skills and signature red and gold armor, serve the dark side with unparalleled bravery. Together, Darth Nightmare and Darth Wolf form a duo that is both feared and respected across countless worlds.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Darth+Nightmare' },
+                ],
+                planets: [
+                    { id: 'tatooine', name: 'Tatooine', type: 'Desert Planet', description: 'A harsh desert world, home to moisture farmers and the starting point for many heroes.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Tatooine' },
+                    { id: 'coruscant', name: 'Coruscant', type: 'Ecumenopolis', description: 'The sprawling city-planet, galactic capital and center of the Republic and Empire.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Coruscant' },
+                    { id: 'hoth', name: 'Hoth', type: 'Ice Planet', description: 'A desolate, ice-covered planet that served as a secret Rebel base.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Hoth' },
+                    { id: 'endor', name: 'Endor', type: 'Forest Moon', description: 'A lush forest moon inhabited by Ewoks, site of a major Rebel victory.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Endor' },
+                    { id: 'dagobah', name: 'Dagobah', type: 'Swamp Planet', description: 'A murky, swampy world where Yoda went into exile and trained Luke Skywalker.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Dagobah' },
+                    { id: 'naboo', name: 'Naboo', type: 'Grassy Planet', description: 'A beautiful, pastoral world known for its peaceful inhabitants and stunning architecture.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Naboo' },
+                    { id: 'mustafar', name: 'Mustafar', type: 'Volcanic Planet', description: 'A fiery, volcanic world, site of Anakin Skywalker\'s defeat and Darth Vader\'s castle.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Mustafar' },
+                    { id: 'geonosis', name: 'Geonosis', type: 'Desert Planet', description: 'A rocky, desert world, home to the Geonosians and a major Separatist stronghold.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Geonosis' },
+                    { id: 'kamino', name: 'Kamino', type: 'Ocean Planet', description: 'A stormy ocean planet, hidden from the Jedi, where the Clone Army was created.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Kamino' },
+                    { id: 'kashyyyk', name: 'Kashyyyk', type: 'Forest Planet', description: 'The lush, arboreal homeworld of the Wookiees.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Kashyyyk' },
+                    { id: 'alderaan', name: 'Alderaan', type: 'Temperate Planet', description: 'A peaceful, beautiful planet, home of Princess Leia, tragically destroyed by the Death Star.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Alderaan' },
+                    { id: 'bespin', name: 'Bespin', type: 'Gas Giant', description: 'A massive gas giant with a breathable atmosphere, home to Cloud City.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Bespin' },
+                    { id: 'jakku', name: 'Jakku', type: 'Desert Planet', description: 'A desolate desert planet in the Western Reaches, home to scavengers and starship graveyards.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Jakku' },
+                    { id: 'scarif', name: 'Scarif', type: 'Tropical Planet', description: 'A tropical planet with Imperial data archives, site of a critical battle for the Death Star plans.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Scarif' },
+                    { id: 'jedha', name: 'Jedha', type: 'Desert Moon', description: 'A desert moon sacred to those who believe in the Force, under Imperial occupation.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Jedha' },
+                    { id: 'ahch-to', name: 'Ahch-To', type: 'Ocean Planet', description: 'A remote, oceanic world, ancient site of the first Jedi Temple, where Luke Skywalker was found.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Ahch-To' },
+                    { id: 'crait', name: 'Crait', type: 'Mineral Planet', description: 'A mineral planet with a surface covered in white salt, revealing red mineral deposits underneath.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Crait' },
+                    { id: 'exegol', name: 'Exegol', type: 'Sith World', description: 'A hidden Sith planet, shrouded in dark side energy, home to the Sith Eternal.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Exegol' },
+                    { id: 'felucia', name: 'Felucia', type: 'Jungle Planet', description: 'A vibrant, bioluminescent jungle planet, home to exotic flora and fauna.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Felucia' },
+                    { id: 'utapau', name: 'Utapau', type: 'Sinkhole Planet', description: 'A dry, dusty world characterized by massive sinkholes, home to the Pau\'an species.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Utapau' },
+                ],
+                vehicles: [
+                    { id: 'falcon', name: 'Millennium Falcon', type: 'Light Freighter', description: 'Han Solo\'s heavily modified Corellian light freighter, famous for the Kessel Run.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Falcon' },
+                    { id: 'xwing', name: 'X-Wing Starfighter', type: 'Starfighter', description: 'The iconic starfighter of the Rebel Alliance, known for its versatility and firepower.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=X-Wing' },
+                    { id: 'tie', name: 'TIE Fighter', type: 'Starfighter', description: 'The standard Imperial starfighter, mass-produced and recognizable by its twin ion engines.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=TIE' },
+                    { id: 'star_destroyer', name: 'Imperial Star Destroyer', type: 'Capital Ship', description: 'A massive, wedge-shaped capital ship forming the backbone of the Imperial fleet.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Star+Destroyer' },
+                    { id: 'at-at', name: 'AT-AT Walker', type: 'Ground Walker', description: 'All Terrain Armored Transport, a heavily armored quadrupedal combat walker used by the Empire.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=AT-AT' },
+                    { id: 'speeder_bike', name: '74-Z Speeder Bike', type: 'Repulsorlift Vehicle', description: 'Fast, open-air repulsorlift vehicles used for reconnaissance and rapid transport.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Speeder+Bike' },
+                    { id: 'slave_i', name: 'Slave I', type: 'Patrol Craft', description: 'Boba Fett\'s distinctive modified Firespray-31-class patrol and attack craft.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Slave+I' },
+                    { id: 'naboo_starfighter', name: 'Naboo N-1 Starfighter', type: 'Starfighter', description: 'Sleek, yellow starfighters used by the Royal Naboo Security Forces.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Naboo+Starfighter' },
+                    { id: 'at-st', name: 'AT-ST Walker', type: 'Ground Walker', description: 'All Terrain Scout Transport, a two-legged walker used for reconnaissance and support.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=AT-ST' },
+                    { id: 'republic_gunship', name: 'Republic Gunship', type: 'Dropship/Gunship', description: 'A versatile low-altitude assault transport and gunship used by the Grand Army of the Republic.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Republic+Gunship' },
+                    { id: 'a-wing', name: 'A-Wing Starfighter', type: 'Starfighter', description: 'A fast and agile Rebel starfighter, ideal for hit-and-run tactics.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=A-Wing' },
+                    { id: 'b-wing', name: 'B-Wing Starfighter', type: 'Starfighter', description: 'A heavily armed Rebel starfighter, designed for bombing runs against capital ships.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=B-Wing' },
+                    { id: 'y-wing', name: 'Y-Wing Starfighter', type: 'Bomber', description: 'A durable and versatile Rebel bomber, often used for long-range missions.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Y-Wing' },
+                    { id: 'tie_interceptor', name: 'TIE Interceptor', type: 'Starfighter', description: 'A faster and more agile variant of the TIE Fighter, used for intercepting enemy craft.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=TIE+Interceptor' },
+                    { id: 'tie_bomber', name: 'TIE Bomber', type: 'Bomber', description: 'An Imperial bomber designed for heavy ordnance delivery against capital ships and ground targets.', imageUrl: 'https://https://placehold.co/400x300/000000/FFFFFF?text=TIE+Bomber' },
+                    { id: 'executor', name: 'Executor-Class Star Dreadnought', type: 'Super Star Destroyer', description: 'One of the largest and most powerful warships ever built by the Galactic Empire.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Executor' },
+                    { id: 'snowspeeder', name: 'T-47 Airspeeder (Snowspeeder)', type: 'Airspeeder', description: 'Modified airspeeders used by the Rebel Alliance on Hoth for defense against AT-ATs.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Snowspeeder' },
+                    { id: 'sandcrawler', name: 'Sandcrawler', type: 'Mobile Fortress', description: 'Massive, treaded vehicles used by Jawas on Tatooine as mobile homes and transport for scavenging.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Sandcrawler' },
+                    { id: 'jedi_starfighter', name: 'Jedi Starfighter', type: 'Starfighter', description: 'Sleek starfighters used by Jedi Knights during the Clone Wars.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Jedi+Starfighter' },
+                    { id: 'v-wing', name: 'V-Wing Starfighter', type: 'Starfighter', description: 'A fast and maneuverable starfighter used by the Republic during the Clone Wars.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=V-Wing' },
+                ],
+                species: [
+                    { id: 'human', name: 'Human', type: 'Mammalian', description: 'The most common sentient species in the galaxy, found on nearly every planet.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Human' },
+                    { id: 'wookiee', name: 'Wookiee', type: 'Mammalian', description: 'Tall, hairy bipeds from Kashyyyk, known for their strength and loyalty.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Wookiee' },
+                    { id: 'droid', name: 'Droid', type: 'Artificial Intelligence', description: 'Mechanical beings with artificial intelligence, serving various functions across the galaxy.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Droid' },
+                    { id: 'twilek', name: 'Twi\'lek', type: 'Near-Human', description: 'Humanoid species distinguished by their twin fleshy prehensile tentacles (lekku) extending from the back of their heads.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Twilek' },
+                    { id: 'moncalamari', name: 'Mon Calamari', type: 'Aquatic', description: 'Amphibious humanoids from Mon Cala, known for their shipbuilding skills and resistance efforts.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Mon+Calamari' },
+                    { id: 'sullustan', name: 'Sullustan', type: 'Mammalian', description: 'Small, rodent-like humanoids with large ears, known for their piloting and navigating skills.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Sullustan' },
+                    { id: 'rodian', name: 'Rodian', type: 'Reptilian', description: 'Green-skinned reptilian humanoids from Rodia, often associated with bounty hunting.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Rodian' },
+                    { id: 'zabrak', name: 'Zabrak', type: 'Near-Human', description: 'Near-human species characterized by their vestigial horns and often facial tattoos.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Zabrak' },
+                    { id: 'ewok', name: 'Ewok', type: 'Mammalian', description: 'Small, furry sentient bipeds native to the forest moon of Endor.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Ewok' },
+                    { id: 'gungan', name: 'Gungan', type: 'Amphibian', description: 'Amphibious sentient species native to the planet Naboo, known for their distinctive speech.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Gungan' },
+                    { id: 'trandoshan', name: 'Trandoshan', type: 'Reptilian', description: 'Large, reptilian humanoids known for their hunting prowess and aggressive nature.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Trandoshan' },
+                    { id: 'ithorian', name: 'Ithorian', type: 'Mammalian', description: 'Herbivorous humanoids with two mouths on their curved necks, known for their peaceful nature.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Ithorian' },
+                    { id: 'duros', name: 'Duros', type: 'Humanoid', description: 'Smooth-skinned humanoids with large red eyes, known as pioneering hyperspace travelers.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Duros' },
+                    { id: 'geonosian', name: 'Geonosian', type: 'Insectoid', description: 'Insectoid species native to Geonosis, known for their hive minds and construction skills.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Geonosian' },
+                    { id: 'kaleesh', name: 'Kaleesh', type: 'Reptilian', description: 'Reptilian bipeds from Kalee, known for their warrior culture, like General Grievous.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Kaleesh' },
+                    { id: 'chiss', name: 'Chiss', type: 'Near-Human', description: 'Near-human species with blue skin and glowing red eyes, known for their strategic minds.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Chiss' },
+                    { id: 'toydarian', name: 'Toydarian', type: 'Winged', description: 'Small, winged humanoids from Toydaria, resistant to Force mind tricks.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Toydarian' },
+                    { id: 'ugnaught', name: 'Ugnaught', type: 'Humanoid', description: 'Small, pig-faced humanoids from Gentes, known for their mechanical aptitude and labor.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Ugnaught' },
+                    { id: 'gammorrean', name: 'Gamorrean', type: 'Porcine', description: 'Large, green-skinned porcine humanoids from Gamorr, often employed as guards.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Gamorrean' },
+                    { id: 'aqualish', name: 'Aqualish', type: 'Aquatic', description: 'Amphibious species from Ando, known for their aggressive nature and multiple eyes/arms.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Aqualish' },
+                ],
+                starships: [
+                    { id: 'death_star', name: 'Death Star', type: 'Battle Station', description: 'A moon-sized Imperial battle station capable of destroying entire planets.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Death+Star' },
+                    { id: 'star_destroyer_isd', name: 'Imperial I-Class Star Destroyer', type: 'Capital Ship', description: 'The iconic symbol of Imperial might, a powerful warship in the Imperial Navy.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=ISD' },
+                    { id: 'mon_calamari_cruiser', name: 'Mon Calamari Cruiser', type: 'Capital Ship', description: 'Large, heavily armed star cruisers used by the Rebel Alliance, often converted civilian vessels.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Mon+Calamari+Cruiser' },
+                    { id: 'tantive_iv', name: 'Tantive IV', type: 'Corvette', description: 'A Corellian Corvette, Princess Leia\'s personal starship, carrying the stolen Death Star plans.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Tantive+IV' },
+                    { id: 'home_one', name: 'Home One', type: 'Flagship', description: 'Admiral Ackbar\'s flagship, a modified Mon Calamari Star Cruiser, central to the Battle of Endor.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Home+One' },
+                    { id: 'super_star_destroyer', name: 'Super Star Destroyer', type: 'Super Capital Ship', description: 'An even larger and more formidable class of Star Destroyer, like the Executor.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Super+Star+Destroyer' },
+                    { id: 'executor_starship', name: 'Executor', type: 'Super Star Destroyer', description: 'Darth Vader\'s personal flagship, a massive Executor-class Star Dreadnought.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Executor' },
+                    { id: 'epsilon_shuttle', name: 'Lambda-Class T-4a Shuttle', type: 'Shuttle', description: 'An Imperial transport shuttle, recognizable by its three folding wings.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Lambda+Shuttle' },
+                    { id: 'republic_cruiser', name: 'Republic Attack Cruiser', type: 'Capital Ship', description: 'The backbone of the Republic fleet during the Clone Wars, often seen in large-scale battles.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Republic+Cruiser' },
+                    { id: 'venator_class', name: 'Venator-Class Star Destroyer', type: 'Capital Ship', description: 'A versatile Republic warship, serving as a starfighter carrier, troop transport, and battleship.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Venator' },
+                    { id: 'separatist_dreadnought', name: 'Munificent-Class Star Frigate', type: 'Frigate', description: 'A common Separatist warship, often used for blockades and planetary assaults.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Munificent' },
+                    { id: 'trade_federation_battleship', name: 'Trade Federation Battleship', type: 'Capital Ship', description: 'Massive, ring-shaped warships used by the Trade Federation, often for blockades.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Trade+Federation' },
+                    { id: 'sith_infiltrator', name: 'Sith Infiltrator', type: 'Stealth Starship', description: 'Darth Maul\'s personal stealth starship, equipped with cloaking device and advanced sensors.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Sith+Infiltrator' },
+                    { id: 'epsilon_shuttle', name: 'Epsilon-Class Shuttle', type: 'Shuttle', description: 'A common Imperial transport shuttle, often used for high-ranking personnel.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Epsilon+Shuttle' },
+                    { id: 'first_order_star_destroyer', name: 'Resurgent-Class Star Destroyer', type: 'Capital Ship', description: 'The primary capital ship of the First Order, a successor to the Imperial Star Destroyer.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Resurgent' },
+                    { id: 'resistance_cruiser', name: 'MC85 Star Cruiser', type: 'Capital Ship', description: 'A large, powerful star cruiser used by the Resistance, based on Mon Calamari designs.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=MC85' },
+                    { id: 'canto_bight_yacht', name: 'Canto Bight Yacht', type: 'Luxury Yacht', description: 'Elegant and opulent star yachts found in the casino city of Canto Bight.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Canto+Yacht' },
+                    { id: 'ghost', name: 'Ghost', type: 'Light Freighter', description: 'A highly modified Corellian VCX-100 light freighter, used by the Spectres rebel cell.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Ghost' },
+                    { id: 'razor_crest', name: 'Razor Crest', type: 'Gunship', description: 'A highly customized ST-70 assault ship, used by the Mandalorian Din Djarin.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Razor+Crest' },
+                    { id: 'profundity', name: 'Profundity', type: 'Mon Calamari Cruiser', description: 'Admiral Raddus\'s flagship, a modified MC75 Star Cruiser, crucial in the Battle of Scarif.', imageUrl: 'https://placehold.co/400x300/000000/FFFFFF?text=Profundity' },
+                ]
+            };
+
+            const charactersGrid = document.getElementById('charactersGrid');
+            const planetsGrid = document.getElementById('planetsGrid');
+            const vehiclesGrid = document.getElementById('vehiclesGrid');
+            const speciesGrid = document.getElementById('speciesGrid'); // New grid
+            const starshipsGrid = document.getElementById('starshipsGrid'); // New grid
+            const searchInput = document.getElementById('searchInput');
+            const backToTopBtn = document.getElementById('backToTopBtn');
+
+
+            const detailModal = document.getElementById('detailModal');
+            const closeButton = document.querySelector('.close-button');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalImage = document.getElementById('modalImage');
+            const modalDescription = document.getElementById('modalDescription');
+            const modalLore = document.getElementById('modalLore');
+
+            // --- Function to create a data card ---
+            function createDataCard(item, type) {
+                const card = document.createElement('div');
+                card.className = 'data-card';
+                card.setAttribute('data-id', item.id);
+                card.setAttribute('data-type', type);
+
+                card.innerHTML = `
+                    <img src="${item.imageUrl}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/400x300/000000/FFFFFF?text=Image+Not+Found';">
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                `;
+
+                card.addEventListener('click', () => openModal(item, type));
+                return card;
+            }
+
+            // --- Function to render all data cards for a category ---
+            function renderCards(data, container, type) {
+                container.innerHTML = ''; // Clear existing cards
+                data.forEach(item => {
+                    container.appendChild(createDataCard(item, type));
+                });
+            }
+
+            // Initial rendering of all sections
+            renderCards(starWarsData.characters, charactersGrid, 'character');
+            renderCards(starWarsData.planets, planetsGrid, 'planet');
+            renderCards(starWarsData.vehicles, vehiclesGrid, 'vehicle');
+            renderCards(starWarsData.species, speciesGrid, 'species'); // Render new section
+            renderCards(starWarsData.starships, starshipsGrid, 'starship'); // Render new section
+
+
+            // --- Modal Logic ---
+            async function openModal(item, type) {
+                modalTitle.textContent = item.name;
+                modalImage.src = item.imageUrl;
+                modalImage.alt = item.name;
+                modalDescription.textContent = item.description;
+                modalLore.textContent = 'Generating lore... Please wait, the Force is strong with this query.'; // Show loading text
+                modalLore.classList.add('loading-text');
+
+                detailModal.style.display = 'flex'; // Use flex to center
+
+                // Generate more lore using Gemini API
+                try {
+                    const prompt = `Generate a detailed paragraph of Star Wars lore for the ${type}: ${item.name}. Focus on its significance, key events, or unique characteristics within the Star Wars universe. Make it sound like it's from a Star Wars encyclopedia.`;
+                    const apiKey = ""; // Canvas will provide this at runtime
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        modalLore.textContent = text;
+                    } else {
+                        modalLore.textContent = 'Could not generate detailed lore at this time. The archives are incomplete.';
+                    }
+                } catch (error) {
+                    console.error('Error fetching lore from Gemini API:', error);
+                    modalLore.textContent = 'Failed to load lore. The Force is not with us today. Please try again later.';
+                } finally {
+                    modalLore.classList.remove('loading-text');
+                }
+            }
+
+            function closeModal() {
+                detailModal.style.display = 'none';
+            }
+
+            closeButton.addEventListener('click', closeModal);
+            // Close modal if user clicks outside the modal content
+            window.addEventListener('click', (event) => {
+                if (event.target === detailModal) {
+                    closeModal();
+                }
+            });
+
+            // --- Search Functionality ---
+            searchInput.addEventListener('input', (event) => {
+                const searchTerm = event.target.value.toLowerCase();
+
+                // Helper function to filter and render
+                function filterAndRender(dataArray, container, type) {
+                    const filteredData = dataArray.filter(item =>
+                        item.name.toLowerCase().includes(searchTerm) ||
+                        item.description.toLowerCase().includes(searchTerm) ||
+                        item.type.toLowerCase().includes(searchTerm)
+                    );
+                    renderCards(filteredData, container, type);
+                }
+
+                filterAndRender(starWarsData.characters, charactersGrid, 'character');
+                filterAndRender(starWarsData.planets, planetsGrid, 'planet');
+                filterAndRender(starWarsData.vehicles, vehiclesGrid, 'vehicle');
+                filterAndRender(starWarsData.species, speciesGrid, 'species'); // Filter new section
+                filterAndRender(starWarsData.starships, starshipsGrid, 'starship'); // Filter new section
+            });
+
+            // --- Smooth Scrolling for Navigation ---
+            document.querySelectorAll('.nav-links a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 70, // Adjust for fixed navbar height
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // --- Back to Top Button Logic ---
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) { // Show button after scrolling 300px
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // --- Reveal on Scroll Animation ---
+            const revealSections = document.querySelectorAll('.reveal-on-scroll');
+            const observerOptions = {
+                root: null, // viewport as root
+                rootMargin: '0px',
+                threshold: 0.1 // 10% of element visible to trigger
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target); // Stop observing once revealed
+                    }
+                });
+            }, observerOptions);
+
+            revealSections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // --- Parallax effect for stars (subtle) ---
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                // Move stars slightly slower than foreground content
+                starsContainer.style.transform = `translateY(-${scrollY * 0.1}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
